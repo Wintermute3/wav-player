@@ -1,0 +1,16 @@
+[Unit]
+Description=wav-player.py - kiosk show sequencer service
+
+[Service]
+ExecStartPre=/bin/sleep 10
+Type=simple
+WorkingDirectory=/home/pi
+ExecStart=/home/pi/wav-player.py
+StandardOutput=syslog
+StandardError=syslog
+User=pi
+Group=pi
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

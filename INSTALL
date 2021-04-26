@@ -1,0 +1,35 @@
+download the two files attached to this note to your windows system
+
+    wav-player.py
+    wav-player.service
+
+transfer the two files to the raspberry pi Desktop using vnc:
+
+    wav-player.py      -> Desktop
+    wav-player.service -> Desktop
+
+*** disable the key binding script before doing any command-line stuff! ***
+
+do the following at a command line on the raspberry pi:
+
+  sudo systemctl disable wav-player
+  sudo systemctl stop    wav-player
+
+now do these commands (watch out for funny single quotes):
+
+  cd
+  cat Desktop/wav-player.py      | tr -d '\r' > wav-player.py
+  cat Desktop/wav-player.service | tr -d '\r' > wav-player.service
+
+  sudo cp wav-player.service /etc/systemd/system/
+  sudo systemctl daemon-reload
+  sudo systemctl start wav-player
+
+if things appear to be working properly, then do:
+
+  sudo systemctl enable wav-player
+
+  rm Desktop/wav-player.py
+  rm Desktop/wav-player.service
+
+all should now be in its final state, ready to run on reboot
