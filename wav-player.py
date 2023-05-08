@@ -65,7 +65,7 @@ def PlayWavFile(WavFile):
   Log('PLAY %s' % (WavFile))
   GPIO.output(GpioOutputPlaying, 1)
   try:
-    os.system("cvlc %d --play-and-exit" % (WavFile))
+    os.system("cvlc %s --play-and-exit" % (WavFile))
     Log('DONE %s' % (WavFile))
   except:
     Log("*** ERROR 3: try: sudo 'apt-get install pulseaudio'")
