@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 PROGRAM = 'wav-player.py'
-VERSION = '1.909.181'
+VERSION = '2.305.081'
 CONTACT = 'bright.tiger@mail.com' # michael nagy for bobproducts.com
 
 #--------------------------------------------------------------------
@@ -51,16 +51,28 @@ def Log(Message):
   syslog(Message)
 
 #----------------------------------------------------------------------
-# set up vlc and loop forever waiting for button presses
+# play a wave file using a new instance of MediaPlayer, and hopefully
+# deallocate that instance upon return
 #----------------------------------------------------------------------
 
-try:
-  import vlc
-  vlc.Instance("--vout none") # seemed to help select proper output device, not sure why
-except:
-  Log('*** ERROR 0: python-vlc not found!')
-  Log("             try: 'sudo pip3 install python-vlc'")
-  os._exit(1)
+def PlayWavFile(WavFile):
+  time.sleep(1.0)
+  WaitForButton(False)
+  Log('IDLE')
+  GPIO.output(GpioOutputIdle, 1)
+  WaitForButton(True)
+  GPIO.output(GpioOutputIdle, 0)
+  Log('PLAY %s' % (WavFile))
+  GPIO.output(GpioOutputPlaying, 1)
+  try:
+    os.system("cvlc %d --play-and-exit" % (WavFile))
+    Log('DONE %s' % (WavFile))
+  except:
+    Log("*** ERROR 3: try: sudo 'apt-get install pulseaudio'")
+
+#----------------------------------------------------------------------
+# loop forever waiting for button presses
+#----------------------------------------------------------------------
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
@@ -79,24 +91,7 @@ try:
     while True:
       Log('START SEQUENCE')
       for WavFile in WavFiles:
-        time.sleep(1.0)
-        WaitForButton(False)
-        Log('IDLE')
-        GPIO.output(GpioOutputIdle, 1)
-        WaitForButton(True)
-        GPIO.output(GpioOutputIdle, 0)
-        Log('PLAY %s' % (WavFile))
-        GPIO.output(GpioOutputPlaying, 1)
-        try:
-          player = vlc.MediaPlayer(WavFile)
-          player.play()
-          while player.get_state() != 6: # ENDED
-            time.sleep(0.1) # wait for end of show track
-          GPIO.output(GpioOutputPlaying, 0)
-          Log('DONE %s' % (WavFile))
-        except:
-          Log('*** ERROR 3: VLC EXCEPTION')
-          Log("             try: 'sudo apt-get install pulseaudio'")
+        PlayWavFile(WavFile)
   else:
     Log("*** ERROR 2: NO FILES MATCH '%s'" % (WavPattern))
 except:
