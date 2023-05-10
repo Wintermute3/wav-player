@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 PROGRAM = 'wav-player.py'
-VERSION = '2.305.081'
+VERSION = '2.305.091'
 CONTACT = 'bright.tiger@mail.com' # michael nagy for bobproducts.com
 
 #--------------------------------------------------------------------
@@ -65,7 +65,7 @@ def PlayWavFile(WavFile):
   Log('PLAY %s' % (WavFile))
   GPIO.output(GpioOutputPlaying, 1)
   try:
-    os.system("vlc %s --play-and-exit" % (WavFile))
+    os.system("cvlc %s --play-and-exit" % (WavFile))
     Log('DONE %s' % (WavFile))
   except:
     Log("*** ERROR 3: try: sudo 'apt-get install pulseaudio'")
