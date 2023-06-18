@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 PROGRAM = 'wav-player.py'
-VERSION = '2.305.091'
+VERSION = '2.306.181'
 CONTACT = 'bright.tiger@mail.com' # michael nagy for bobproducts.com
 
 #--------------------------------------------------------------------
