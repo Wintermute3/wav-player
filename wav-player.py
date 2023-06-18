@@ -8,8 +8,25 @@ CONTACT = 'bright.tiger@mail.com' # michael nagy for bobproducts.com
 # wav-player.py
 #--------------------------------------------------------------------
 # play wav files which match WavPattern one after the next when the
-# configured GPIO button is pressed.  we expect to be started and
-# controlled by a systemd unit file with watchdog features enabled.
+# configured GPIO button is pressed.  we expect to be started at
+# boot by the cron facility:
+#
+#   @reboot ~/wav.player.py
+#
+# we also expect the pulse-audio output device to be set to the usb
+# output, which is also done via cron:
+#
+#   @reboot /usr/bin/pacmd set-default-sink 1
+#
+# use this command to verify the usb device index if necessary:
+#
+#   pacmd list-sinks | grep 'index:\|name:'
+#
+# wav files are played by running vlc synchronously (we wait for vlc
+# to terminate before continuing).  if vlc is already running when
+# we want to play a wav file, that indicates that a cron job or and
+# xkeybind macro is active.  in this instance we have priority, so
+# we always killall vlc before starting our playback.
 #--------------------------------------------------------------------
 
 WavPattern = '/home/pi/Shows/show*.wav'
@@ -65,7 +82,8 @@ def PlayWavFile(WavFile):
   Log('PLAY %s' % (WavFile))
   GPIO.output(GpioOutputPlaying, 1)
   try:
-    os.system("cvlc %s --play-and-exit" % (WavFile))
+    os.system("killall vlc")
+    os.system("vlc %s --play-and-exit" % (WavFile))
     Log('DONE %s' % (WavFile))
   except:
     Log("*** ERROR 3: try: sudo 'apt-get install pulseaudio'")
